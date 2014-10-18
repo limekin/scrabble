@@ -1,44 +1,26 @@
 class Scrabble
   def self.score(word)
 
-	  ret = 0
-	  return ret if word.nil? or word.empty?
-
-	  word.each_char do |letter|
-		  ret += letterScore(letter)
-          end
-	  ret
+	  return 0 if word.nil? or word.empty?
+	  word.chars.reduce(0) { |acc, letter| acc + letterScore(letter) }
 
   end
 
   def self.highest_score_from(words)
 
-	  ret = ""
-	  maxScore = 0
-	  words.each do |word|
-		  wordScore = score(word)
-		  if maxScore < wordScore 
-			  maxScore = wordScore
-			  ret = word
-		  elsif maxScore == wordScore
-			  if bonus?(word) and not bonus?(ret)
-				  ret = word
-			  elsif word.length < ret.length
-				  ret = word
-		          end
-		  end
-
-   	  end
+	  maxScore = words.reduce(0) do |acc, word| 
+		  acc = score(word) if acc < score(word) 
+	  	  acc
+	  end
+	  highScoreWords = words.select { |word| score(word) == maxScore }
+	  ret = highScoreWords.detect { |word| bonus?(word) }
+	  (ret = highScoreWords.sort_by { |word| word.length }[0]) unless ret
 	  ret
-  	  
-	  
-
 
   end
   
 
   def self.bonus?(word)
-
 	  word.length == 7
   end
 
@@ -46,17 +28,10 @@ class Scrabble
 
   def self.letterScore(letter)
 
-	  ret = -1
-	  letter = letter.upcase
-	  ret = 1 if %w( A E I O U L N R S T ).include? letter
-	  ret = 2 if %w( D G).include? letter
-	  ret = 3 if %w( B C M P  ).include? letter
-	  ret = 4 if %w( F H V W Y  ).include? letter
-	  ret = 5 if %w( K  ).include? letter
-	  ret = 6 if %w( J X  ).include? letter
-	  ret = 7  if %w( Q Z ).include? letter
-	  ret
-
+	  letter.upcase!
+	  scores = {"AEIOULNRST" => 1, "DG" => 2, "BCMP" => 3, "FHVWY" =>4, "K" => 5, "JX" => 8, "QZ" => 10}
+	  scores[ scores.keys.detect { |letters| letters.include? letter } ]
+	
   end
 
 end
