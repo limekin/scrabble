@@ -8,13 +8,10 @@ class Scrabble
 
   def self.highest_score_from(words)
 
-	  maxScore = words.reduce(0) do |acc, word| 
-		  acc = score(word) if acc < score(word) 
-	  	  acc
-	  end
+	  maxScore = words.map { |word| score(word) }.max
 	  highScoreWords = words.select { |word| score(word) == maxScore }
 	  ret = highScoreWords.detect { |word| bonus?(word) }
-	  (ret = highScoreWords.sort_by { |word| word.length }[0]) unless ret
+	  ret = highScoreWords.sort_by { |word| word.length }[0] unless ret
 	  ret
 
   end
